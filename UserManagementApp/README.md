@@ -10,11 +10,11 @@
 
 ```
 UserManagementApp/
-├── Models/                     # Модели данных
+├── Models/                    # Модели данных
 │   ├── User.cs                # Модель пользователя
 │   ├── Role.cs                # Модель роли
 │   └── UserExportModel.cs     # Модель для экспорта/импорта JSON
-├── ViewModels/                # ViewModels для MVVM
+├── ViewModels/                # ViewModels
 │   ├── BaseViewModel.cs       # Базовый ViewModel
 │   ├── MainViewModel.cs       # Главный ViewModel
 │   └── AddUserViewModel.cs    # ViewModel для добавления пользователя
@@ -27,15 +27,14 @@ UserManagementApp/
 │   └── RoleRepository.cs      # Реализация репозитория ролей
 ├── Services/                  # Сервисы
 │   └── JsonService.cs         # Сервис для работы с JSON
-├── Commands/                  # Команды для MVVM
+├── Commands/                  # Команды
 │   └── RelayCommand.cs        # Базовая реализация ICommand
 ├── Converters/                # Конвертеры для привязки данных
 │   ├── InverseBooleanConverter.cs
 │   └── StringToVisibilityConverter.cs
 ├── MainWindow.xaml            # Главное окно приложения
 ├── App.xaml                   # Конфигурация приложения
-├── database_setup.sql         # SQL скрипт для создания БД
-└── appsettings.json          # Конфигурационный файл
+└── appsettings.json           # Конфигурационный файл
 ```
 
 ## Требования

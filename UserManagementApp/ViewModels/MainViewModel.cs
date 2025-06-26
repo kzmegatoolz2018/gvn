@@ -20,16 +20,18 @@ namespace UserManagementApp.ViewModels
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IJsonService _jsonService;
+        private readonly TableViewModel _tableViewModel;
 
         private User? _selectedUser;
         private bool _isLoading;
         private string _statusMessage = "";
 
-        public MainViewModel(IUserRepository userRepository, IRoleRepository roleRepository, IJsonService jsonService)
+        public MainViewModel(IUserRepository userRepository, IRoleRepository roleRepository, IJsonService jsonService, TableViewModel tableViewModel)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
             _jsonService = jsonService ?? throw new ArgumentNullException(nameof(jsonService));
+            _tableViewModel = tableViewModel ?? throw new ArgumentNullException(nameof(tableViewModel));
 
             Users = new ObservableCollection<User>();
             Roles = new ObservableCollection<Role>();
@@ -47,6 +49,11 @@ namespace UserManagementApp.ViewModels
 
         public ObservableCollection<User> Users { get; }
         public ObservableCollection<Role> Roles { get; }
+
+        /// <summary>
+        /// ViewModel для работы с произвольными таблицами БД
+        /// </summary>
+        public TableViewModel TableViewModel => _tableViewModel;
 
         public User? SelectedUser
         {

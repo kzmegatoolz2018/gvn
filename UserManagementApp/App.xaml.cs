@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Xaml;
 using UserManagementApp.Repositories;
-using UserManagementApp.Services;
 using UserManagementApp.ViewModels;
 
 namespace UserManagementApp;
@@ -26,15 +25,10 @@ public partial class App : Application
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
                                  ?? DefaultConnectionString;
 
-            // Настройка Dependency Injection (простая реализация)
-            var userRepository = new UserRepository(connectionString);
-            var roleRepository = new RoleRepository(connectionString);
+            // Настройка Dependency Injection (упрощенная реализация)
             var tableRepository = new TableRepository(connectionString);
-            var jsonService = new JsonService();
-
             var tableViewModel = new TableViewModel(tableRepository);
-            var mainViewModel = new MainViewModel(userRepository, roleRepository, jsonService, tableViewModel);
-            var mainWindow = new MainWindow(mainViewModel);
+            var mainWindow = new MainWindow(tableViewModel);
 
             mainWindow.Show();
         }

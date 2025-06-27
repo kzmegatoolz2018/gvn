@@ -16,14 +16,14 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    public MainWindow(MainViewModel viewModel) : this()
+    public MainWindow(TableViewModel tableViewModel) : this()
     {
-        DataContext = viewModel;
+        DataContext = tableViewModel;
         
         // Подписываемся на изменения лога для автопрокрутки
-        if (viewModel.TableViewModel != null)
+        if (tableViewModel != null)
         {
-            viewModel.TableViewModel.PropertyChanged += TableViewModel_PropertyChanged;
+            tableViewModel.PropertyChanged += TableViewModel_PropertyChanged;
         }
     }
     
@@ -48,9 +48,9 @@ public partial class MainWindow : Window
     private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
     {
         // Сохраняем оригинальные значения для возможного отката
-        if (e.Row.Item is DataRowView dataRowView && DataContext is MainViewModel mainViewModel)
+        if (e.Row.Item is DataRowView dataRowView && DataContext is TableViewModel tableViewModel)
         {
-            mainViewModel.TableViewModel.BeginEdit(dataRowView);
+            tableViewModel.BeginEdit(dataRowView);
         }
     }
     
@@ -58,7 +58,7 @@ public partial class MainWindow : Window
     {
         if (e.EditAction == DataGridEditAction.Commit && 
             e.Row.Item is DataRowView dataRowView && 
-            DataContext is MainViewModel mainViewModel)
+            DataContext is TableViewModel tableViewModel)
         {
             // Сначала принимаем изменения в DataRow
             if (e.EditingElement is TextBox textBox && e.Column.Header != null)
@@ -74,14 +74,14 @@ public partial class MainWindow : Window
             // Используем Normal приоритет вместо Background для более быстрого выполнения
             Dispatcher.BeginInvoke(new System.Action(async () =>
             {
-                await mainViewModel.TableViewModel.CommitEdit(dataRowView);
+                await tableViewModel.CommitEdit(dataRowView);
             }), System.Windows.Threading.DispatcherPriority.Normal);
         }
         else if (e.EditAction == DataGridEditAction.Cancel && 
                  e.Row.Item is DataRowView dataRowView2 && 
-                 DataContext is MainViewModel mainViewModel2)
+                 DataContext is TableViewModel tableViewModel2)
         {
-            mainViewModel2.TableViewModel.CancelEdit(dataRowView2);
+            tableViewModel2.CancelEdit(dataRowView2);
         }
     }
 }

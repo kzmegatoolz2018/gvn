@@ -34,30 +34,32 @@
             <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10" 
                        HorizontalAlignment="Left">
                 <Label Content="Выберите таблицу:" VerticalAlignment="Center" Margin="0,0,10,5"/>
-                <ComboBox ItemsSource="{Binding TableViewModel.Tables}"
-                          SelectedItem="{Binding TableViewModel.SelectedTable}"
+                <ComboBox ItemsSource="{Binding Tables}"
+                          SelectedItem="{Binding SelectedTable}"
                           DisplayMemberPath="DisplayName"
                           MinWidth="200" MaxWidth="350" Height="30" Margin="0,0,10,5"/>
-                <Button Content="Обновить данные" Command="{Binding TableViewModel.RefreshDataCommand}" 
+                <Button Content="Тест подключения" Command="{Binding TestConnectionCommand}" 
+                        MinWidth="120" Height="30" Margin="0,0,10,5" Background="#E3F2FD"/>
+                <Button Content="Обновить данные" Command="{Binding RefreshDataCommand}" 
                         MinWidth="120" Height="30" Margin="0,0,10,5"/>
-                <Button Content="Обновить список таблиц" Command="{Binding TableViewModel.LoadTablesCommand}" 
+                <Button Content="Обновить список таблиц" Command="{Binding LoadTablesCommand}" 
                         MinWidth="150" Height="30" Margin="0,0,10,5"/>
                 <Separator Width="2" Height="25" Margin="5,0"/>
-                <Button Content="Добавить запись" Command="{Binding TableViewModel.AddRowCommand}" 
+                <Button Content="Добавить запись" Command="{Binding AddRowCommand}" 
                         MinWidth="120" Height="30" Margin="0,0,10,5"/>
-                <Button Content="Удалить запись" Command="{Binding TableViewModel.DeleteRowCommand}" 
+                <Button Content="Удалить запись" Command="{Binding DeleteRowCommand}" 
                         MinWidth="120" Height="30" Margin="0,0,10,5"/>
                 <Separator Width="2" Height="25" Margin="5,0"/>
-                <Button Content="Экспорт JSON" Command="{Binding TableViewModel.ExportToJsonCommand}" 
+                <Button Content="Экспорт JSON" Command="{Binding ExportToJsonCommand}" 
                         MinWidth="100" Height="30" Margin="0,0,10,5"/>
-                <Button Content="Импорт JSON" Command="{Binding TableViewModel.ImportFromJsonCommand}" 
+                <Button Content="Импорт JSON" Command="{Binding ImportFromJsonCommand}" 
                         MinWidth="100" Height="30" Margin="0,0,10,5"/>
             </WrapPanel>
 
             <!-- DataGrid для отображения данных таблицы -->
             <DataGrid Grid.Row="1" 
-                      ItemsSource="{Binding TableViewModel.TableDataView, Mode=OneWay}"
-                      SelectedItem="{Binding TableViewModel.SelectedRow}"
+                      ItemsSource="{Binding TableDataView, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedRow}"
                       AutoGenerateColumns="True" 
                       IsReadOnly="False"
                       CanUserAddRows="False"
@@ -85,7 +87,7 @@
                     <!-- Кнопки управления логами -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
                         <Button Content="Очистить лог" Width="100" Height="25" 
-                                Command="{Binding TableViewModel.ClearLogCommand}"/>
+                                Command="{Binding ClearLogCommand}"/>
                         <CheckBox Content="Автопрокрутка" IsChecked="True" 
                                   VerticalAlignment="Center" Margin="10,0,0,0"
                                   x:Name="AutoScrollCheckBox"/>
@@ -93,7 +95,7 @@
                     
                     <!-- Текстовое поле для логов -->
                     <TextBox Grid.Row="1" 
-                             Text="{Binding TableViewModel.TransactionLog, Mode=OneWay}"
+                             Text="{Binding TransactionLog, Mode=OneWay}"
                              IsReadOnly="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
@@ -113,16 +115,16 @@
                 <StackPanel Orientation="Horizontal">
                     <ProgressBar Width="20" Height="15" Margin="0,0,10,0"
                                  IsIndeterminate="True" 
-                                 Visibility="{Binding TableViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                    <TextBlock Text="{Binding TableViewModel.StatusMessage}"/>
+                                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Text="{Binding StatusMessage}"/>
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Выбранная таблица: " FontWeight="Normal"/>
-                    <TextBlock Text="{Binding TableViewModel.SelectedTable.TableName, Mode=OneWay, FallbackValue='Не выбрана'}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedTable.TableName, Mode=OneWay, FallbackValue='Не выбрана'}" FontWeight="Bold"/>
                     <TextBlock Text=" | Записей: " Margin="10,0,0,0"/>
-                    <TextBlock Text="{Binding TableViewModel.TableData.Rows.Count, Mode=OneWay, FallbackValue='0'}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding TableData.Rows.Count, Mode=OneWay, FallbackValue='0'}" FontWeight="Bold"/>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>

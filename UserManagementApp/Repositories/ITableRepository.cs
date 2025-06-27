@@ -11,6 +11,11 @@ namespace UserManagementApp.Repositories
     public interface ITableRepository
     {
         /// <summary>
+        /// Тестирование подключения к базе данных
+        /// </summary>
+        Task<(bool isConnected, string connectionInfo, string errorMessage)> TestConnectionAsync();
+
+        /// <summary>
         /// Получить список всех пользовательских таблиц в базе данных
         /// </summary>
         Task<IEnumerable<DatabaseTable>> GetAllTablesAsync();

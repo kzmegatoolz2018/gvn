@@ -34,8 +34,13 @@ namespace UserManagementApp.Repositories
 
             try
             {
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 📋 Загрузка списка таблиц...");
                 using var connection = new NpgsqlConnection(_connectionString);
+                
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 🔌 Подключение к БД для получения таблиц...");
                 await connection.OpenAsync();
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ✅ Подключение установлено успешно");
+                
                 using var command = new NpgsqlCommand(query, connection);
                 using var reader = await command.ExecuteReaderAsync();
 
@@ -53,9 +58,12 @@ namespace UserManagementApp.Repositories
                     table.RowCount = await GetTableRowCountAsync(tableName);
                     tables.Add(table);
                 }
+                
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ✅ Загружено таблиц: {tables.Count}");
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ❌ Ошибка при получении списка таблиц: {ex.Message}");
                 throw new InvalidOperationException($"Ошибка при получении списка таблиц: {ex.Message}", ex);
             }
 
@@ -75,8 +83,12 @@ namespace UserManagementApp.Repositories
 
             try
             {
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 📊 Загрузка данных таблицы '{tableName}'...");
                 using var connection = new NpgsqlConnection(_connectionString);
+                
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 🔌 Подключение к БД для получения данных...");
                 await connection.OpenAsync();
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ✅ Подключение установлено успешно");
 
                 // Используем параметризованный запрос через information_schema для безопасности
                 var query = $"SELECT * FROM public.\"{tableName}\" LIMIT 1000"; // Ограничиваем количество записей для производительности
@@ -85,6 +97,7 @@ namespace UserManagementApp.Repositories
                 using var adapter = new NpgsqlDataAdapter(command);
                 
                 adapter.Fill(dataTable);
+                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ✅ Загружено записей: {dataTable.Rows.Count}");
             }
             catch (Exception ex)
             {
@@ -545,6 +558,63 @@ namespace UserManagementApp.Repositories
             catch
             {
                 return false;
+            }
+        }
+
+        public async Task<(bool isConnected, string connectionInfo, string errorMessage)> TestConnectionAsync()
+        {
+            try
+            {
+                var connectionInfo = $"Тестирование подключения к БД...\n";
+                connectionInfo += $"Строка подключения: {_connectionString}\n";
+
+                using var connection = new NpgsqlConnection(_connectionString);
+                
+                connectionInfo += $"Установка соединения...\n";
+                await connection.OpenAsync();
+                
+                connectionInfo += $"✅ Подключение успешно установлено!\n";
+                connectionInfo += $"База данных: {connection.Database}\n";
+                connectionInfo += $"Сервер: {connection.Host}:{connection.Port}\n";
+                connectionInfo += $"Пользователь: {connection.UserName}\n";
+                connectionInfo += $"Состояние подключения: {connection.State}\n";
+                connectionInfo += $"Версия сервера: {connection.PostgreSqlVersion}\n";
+                
+                return (true, connectionInfo, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"❌ ОШИБКА подключения к БД:\n";
+                errorMessage += $"Тип ошибки: {ex.GetType().Name}\n";
+                errorMessage += $"Сообщение: {ex.Message}\n";
+                
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $"Внутренняя ошибка: {ex.InnerException.Message}\n";
+                }
+                
+                // Дополнительная диагностика для частых ошибок подключения
+                if (ex is NpgsqlException npgsqlEx)
+                {
+                    errorMessage += $"Код ошибки PostgreSQL: {npgsqlEx.SqlState}\n";
+                }
+                
+                if (ex is System.Net.Sockets.SocketException)
+                {
+                    errorMessage += "Возможные причины:\n";
+                    errorMessage += "- Сервер БД недоступен\n";
+                    errorMessage += "- Неправильный хост или порт\n";
+                    errorMessage += "- Проблемы с сетью\n";
+                }
+                
+                if (ex.Message.Contains("authentication"))
+                {
+                    errorMessage += "Возможные причины:\n";
+                    errorMessage += "- Неправильные учетные данные\n";
+                    errorMessage += "- Пользователь не имеет прав доступа\n";
+                }
+                
+                return (false, string.Empty, errorMessage);
             }
         }
 

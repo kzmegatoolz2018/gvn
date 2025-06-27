@@ -42,6 +42,7 @@ namespace UserManagementApp.ViewModels
             ExportToJsonCommand = new RelayCommand(async () => await ExportToJsonAsync(), () => SelectedTable != null);
             ImportFromJsonCommand = new RelayCommand(async () => await ImportFromJsonAsync(), () => SelectedTable != null);
             ClearLogCommand = new RelayCommand(() => ClearLog());
+            TestConnectionCommand = new RelayCommand(async () => await TestConnectionAsync());
 
             // Загружаем список таблиц при инициализации (в фоновом режиме)
             Task.Run(async () =>
@@ -135,6 +136,7 @@ namespace UserManagementApp.ViewModels
         public ICommand ExportToJsonCommand { get; }
         public ICommand ImportFromJsonCommand { get; }
         public ICommand ClearLogCommand { get; }
+        public ICommand TestConnectionCommand { get; }
 
         public DataRowView? SelectedRow
         {
@@ -648,5 +650,53 @@ namespace UserManagementApp.ViewModels
         }
         
         #endregion
+
+        private async Task TestConnectionAsync()
+        {
+            try
+            {
+                IsLoading = true;
+                StatusMessage = "Тестирование подключения к базе данных...";
+                LogTransaction("🔌 Начинаем тест подключения к базе данных");
+
+                // Используем новый метод тестирования подключения
+                var (isConnected, connectionInfo, errorMessage) = await _tableRepository.TestConnectionAsync();
+
+                if (isConnected)
+                {
+                    LogTransaction("✅ ПОДКЛЮЧЕНИЕ УСПЕШНО!");
+                    LogTransaction(connectionInfo);
+                    StatusMessage = "Подключение к базе данных успешно установлено";
+                    
+                    // Попробуем загрузить список таблиц
+                    LogTransaction("📋 Попытка загрузки списка таблиц...");
+                    var tables = await _tableRepository.GetAllTablesAsync();
+                    LogTransaction($"✅ Загружено таблиц: {tables.Count()}");
+                    StatusMessage = $"Подключение успешно, найдено таблиц: {tables.Count()}";
+                }
+                else
+                {
+                    LogTransaction("❌ ОШИБКА ПОДКЛЮЧЕНИЯ!");
+                    LogTransaction(errorMessage);
+                    StatusMessage = "Ошибка подключения к базе данных";
+                }
+            }
+            catch (Exception ex)
+            {
+                LogTransaction($"❌ КРИТИЧЕСКАЯ ОШИБКА при тестировании подключения:");
+                LogTransaction($"Тип: {ex.GetType().Name}");
+                LogTransaction($"Сообщение: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    LogTransaction($"Внутренняя ошибка: {ex.InnerException.Message}");
+                }
+                LogTransaction($"Полная трассировка: {ex}");
+                StatusMessage = $"Критическая ошибка: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
     }
 }

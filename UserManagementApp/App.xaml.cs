@@ -13,7 +13,7 @@ namespace UserManagementApp;
 public partial class App : Application
 {
     private const string DefaultConnectionString = 
-        "Host=26.12.33.238;Database=cmd_db2;Username=postgres;Password=1;Port=5432;";
+        "Host=26.12.33.238;Database=cms_gvn;Username=postgres;Password=1;Port=5432;";
 
     protected override void OnStartup(StartupEventArgs e)
     {
